@@ -1,8 +1,36 @@
 # learntris implementation in picolisp
 
+
+(de print-matrix ()
+   (prinl ". . . . . . . . . .")
+   (prinl ". . . . . . . . . .")
+   (prinl ". . . . . . . . . .")
+   (prinl ". . . . . . . . . .")
+   (prinl ". . . . . . . . . .")
+   (prinl ". . . . . . . . . .")
+   (prinl ". . . . . . . . . .")
+   (prinl ". . . . . . . . . .")
+   (prinl ". . . . . . . . . .")
+   (prinl ". . . . . . . . . .")
+   (prinl ". . . . . . . . . .")
+   (prinl ". . . . . . . . . .")
+   (prinl ". . . . . . . . . .")
+   (prinl ". . . . . . . . . .")
+   (prinl ". . . . . . . . . .")
+   (prinl ". . . . . . . . . .")
+   (prinl ". . . . . . . . . .")
+   (prinl ". . . . . . . . . .")
+   (prinl ". . . . . . . . . .")
+   (prinl ". . . . . . . . . .")
+   (prinl ". . . . . . . . . .")
+   (prinl ". . . . . . . . . ."))
+
+
+
 (de handle (Ch)
    (case Ch
-      ("q" (bye))))
+      ("p" (print-matrix))
+      ("q" (bye)) ) )
 
 (de mapstr (F Sym)
    (mapcar F (str Sym)) )
