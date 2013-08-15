@@ -1,14 +1,29 @@
 # learntris implementation in picolisp
 
-(de print-matrix ()
-   (for Row 22
-      (prinl ". . . . . . . . . .")))
+# *M : the matrix (official term for the 22 * 10 grid)
+(def '*M ())
+
+(de cmd-c () # clear the matrix
+   (setq *M ())
+   (for Y 22
+      (setq *M (append *M '(". . . . . . . . . ."))) ) )
+
+(de cmd-g () # given the following matrix...
+   (setq *M ())
+   (for Y 22
+      (setq *M (append *M (list (line)))) ) )
+
+(de cmd-p () # print the matrix
+   (mapcar 'prinl *M) )
 
 (de dispatch (Ch)
    (case Ch
-      ("p" (print-matrix))
-      ("q" (bye))))
+      ("c" (cmd-c))
+      ("g" (cmd-g))
+      ("p" (cmd-p))
+      ("q" (bye)) ) )
 
 (de main ()
+   (cmd-c)
    (while (str (line))
-      (mapcar dispatch (str @))))
+      (mapcar dispatch (str @)) ) )
