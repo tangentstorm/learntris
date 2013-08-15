@@ -4,14 +4,11 @@
    (for Row 22
       (prinl ". . . . . . . . . .")))
 
-(de handle (Ch)
+(de dispatch (Ch)
    (case Ch
       ("p" (print-matrix))
-      ("q" (bye)) ) )
-
-(de mapstr (F Sym)
-   (mapcar F (str Sym)) )
+      ("q" (bye))))
 
 (de main ()
    (while (str (line))
-      (mapstr handle @)))
+      (mapcar dispatch (str @))))
