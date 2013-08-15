@@ -1,4 +1,7 @@
 # learntris implementation in picolisp
+# copyright (c) 2013 by michal j wallace.
+# this code is available under the MIT/X11 license.
+# http://github.com/learnprogramming/learntris/
 
 (def '*M ()) # matrix
 (def '*Q ()) # input queue
