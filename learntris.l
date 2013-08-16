@@ -14,7 +14,7 @@
 (de q? () (fifo '*Q)) # next value in the queue, or nil
 
 (de +ch () # same as 'q? but also cache result in *ch
-   (setq *ch (q?)) )
+   (setq *ch (q?)) *ch)
 
 # -- the matrix ------------------------------------------------
 # "matrix" is the official term for the 22 * 10 grid of cells.
@@ -44,9 +44,33 @@
 #
 # * you don't have have to declare them anyway, but I prefer to.
 
-(de cmd-? () # query a register variable
-   (println (or (get 'R (+ch)) 0) ))
+(de %get (reg)
+   (or (get 'R (intern reg)) 0) )
 
+(de %set (reg val)
+   (put 'R (intern reg) val) )
+
+(de %add (reg amt)
+   (%set reg (+ amt (%get reg))) )
+
+(de cmd-? () # query a register variable
+   (println (%get (+ch))) )
+
+
+# -- stepping --------------------------------------------------
+
+(de is-full (Line)
+   (not (filter '((x) (= x ".")) Line)) )
+
+(de step! ()
+   (setq *M (filter '((x) (not (is-full x))) *M))
+   (while (< (length *M) 22)
+      (%add '"n" 1) (%add '"s" 100)
+      (setq *M (insert 0 *M '(". . . . . . . . . ."))) ) )
+
+
+(de cmd-s () # step the interpreter
+   (step!) )
 
 # -- command dispatch ------------------------------------------
 
@@ -56,7 +80,8 @@
       ("c" (cmd-c))
       ("g" (cmd-g))
       ("p" (cmd-p))
-      ("q" (bye)) ) )
+      ("q" (bye))
+      ("s" (cmd-s)) ) )
 
 (de main ()
    (cmd-c)
