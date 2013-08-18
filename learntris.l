@@ -75,43 +75,53 @@
 # -- tetraminos -------------------------------------------------
 
 (put 'Tet 'I
-   '(". . . ."
-     "c c c c"
-     ". . . ."
-     ". . . ." ))
+   '(( - - - - )
+     ( c c c c )
+     ( - - - - )
+     ( - - - - )))
 
 (put 'Tet 'O
-   '(". y y ."
-     ". y y ."
-     ". . . ." ))
+   '(( - y y - )
+     ( - y y - )
+     ( - - - - )))
 
 (put 'Tet 'Z
-   '("r r ."
-     ". r r"
-     ". . ." ))
+   '(( r r - )
+     ( - r r )
+     ( - - - )))
 
 (put 'Tet 'S
-   '(". g g"
-     "g g ."
-     ". . ." ))
+   '(( - g g )
+     ( g g - )
+     ( - - - )))
 
 (put 'Tet 'J
-   '("b . ."
-     "b b b"
-     ". . ." ) )
+   '(( b - - )
+     ( b b b )
+     ( - - - )))
 
 (put 'Tet 'L
-   '(". . o"
-     "o o o"
-     ". . ." ) )
+   '(( - - o )
+     ( o o o )
+     ( - - - )))
 
 (put 'Tet 'T
-   '(". m ."
-     "m m m"
-     ". . ." ) )
+   '(( - m - )
+     ( m m m )
+     ( - - - )))
+
+(de sym->char (Sym)
+   (if (= Sym '-) "." (sym Sym)) )
+
+(de row->str (Row)
+   (glue " " (mapcar sym->char Row)))
+
+(de current-shape ()
+   (get 'Tet (get 'Tet '=)) )
 
 (de cmd-t () # show current tetramino
-   (mapc prinl (get 'Tet (get 'Tet '=)) ))
+   (mapc prinl
+      (mapcar row->str (current-shape)) ) )
 
 
 # -- command dispatch ------------------------------------------
@@ -133,8 +143,7 @@
       ("J" (put 'Tet '= 'J))
       ("L" (put 'Tet '= 'L))
       ("T" (put 'Tet '= 'T))
-
-      ) ) )
+ ) ))
 
 (de main ()
    (cmd-c)
