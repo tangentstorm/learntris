@@ -5,12 +5,12 @@
 
 # -- the input queue -------------------------------------------
 
-(def '*Q ()) # input queue
+(de *Q)  # input queue
 (de *ch  "") # current char
 
-(de ls>q (ls) # copy items in list to global queue
-   (mapcar '((x) (fifo '*Q x)) ls)
-   ls ) # return list the list
+(de ls>q (Ls) # copy items in list to global queue
+   (apply fifo Ls '*Q)) # then it returns the list
+
 (de q? () (fifo '*Q)) # next value in the queue, or nil
 
 (de +ch () # same as 'q? but also cache result in *ch
@@ -19,20 +19,20 @@
 # -- the matrix ------------------------------------------------
 # "matrix" is the official term for the 22 * 10 grid of cells.
 
-(def '*M ()) # matrix
+(de *M) # matrix
 
 (de cmd-c () # clear the matrix
    (setq *M ())
-   (for Y 22
+   (do 22
       (setq *M (append *M '(". . . . . . . . . ."))) ) )
 
 (de cmd-g () # given the following matrix...
    (setq *M ())
-   (for Y 22
+   (do 22
       (setq *M (append *M (list (line)))) ) )
 
 (de cmd-p () # print the matrix
-   (mapcar 'prinl *M) )
+   (mapc prinl *M) )
 
 
 # -- registers -------------------------------------------------
@@ -59,11 +59,11 @@
 
 # -- stepping --------------------------------------------------
 
-(de is-full (Line)
-   (not (filter '((x) (= x ".")) Line)) )
+(de full? (Line)
+   (not (member "." Line)) )
 
 (de step! ()
-   (setq *M (filter '((x) (not (is-full x))) *M))
+   (setq *M (filter '((x) (not (full? x))) *M))
    (while (< (length *M) 22)
       (%add '"n" 1) (%add '"s" 100)
       (setq *M (insert 0 *M '(". . . . . . . . . ."))) ) )
