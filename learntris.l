@@ -181,9 +181,9 @@
    (clockwise (clockwise (clockwise Pic))) )
 
 (de cmd-rotate-clockwise ()
-   (put 'Tet 'pic (clockwise (current-shape))))
+   (put 'Tet '= (clockwise (current-shape))))
 (de cmd-rotate-anticlock ()
-   (put 'Tet 'pic (anticlock (current-shape))))
+   (put 'Tet '= (anticlock (current-shape))))
 
 (de print-eval ARGS # prints each argument, followed by the result of evaluating it
    (for q ARGS
