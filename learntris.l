@@ -116,13 +116,84 @@
 (de row->str (Row)
    (glue " " (mapcar sym->char Row)))
 
-(de current-shape ()
-   (get 'Tet (get 'Tet '=)) )
 
 (de cmd-t () # show current tetramino
    (mapc prinl
       (mapcar row->str (current-shape)) ) )
 
+(de set-shape (QuotedChar)
+   (put 'Tet '= (get 'Tet QuotedChar)) )
+
+(de current-shape ()
+   (get 'Tet '=) )
+
+
+# -- grid rotations --------------------------------------------
+#
+# "pic" is the 2d list format used above
+#
+# ex: '((- m -)
+#       (m m m)
+#       (- - -))
+#
+# "xyv" is a list of (x y value) triples:
+#
+# ex: '((0 0 -) (1 0 m) (2 0 -)
+#       (0 1 m) (1 1 m) (2 1 m)
+#       (0 2 -) (1 2 -) (2 2 -))
+
+(de row->xyv (Row Y W)
+   (make
+      (setq X -1)
+      (for Val Row
+         (link (list (inc 'X) Y Val)) ) ) )
+
+(de pic->xyvs (Pic)
+   (make 
+      (setq Y -1)
+      (for Row Pic
+         (chain (row->xyv Row (inc 'Y))) ) ) )
+
+(de sort-by-yx (XYVs) # sort by y, then by x
+   (by cadr sort (by car sort XYVs)))
+(de xyv->yxv (XYV)
+   (apply '((X Y V) (list Y X V)) XYV))
+(de group-by-y (XYVs) # [(X Y V)] -> [(Y [(X V)])]
+   (group (mapc xyv->yxv XYVs) ))
+(de xyvs->pic (XYVs)
+   (make
+      (let (Groups (group-by-y (sort-by-yx XYVs)))
+         (for Row Groups
+            # cdr to strip Y, map cadr to extract vals
+            (link (mapcar cadr (cdr Row))) ) ) ) )
+   
+(de clockwise-renumber (XYVs W) # -> XYVs'
+   (let (Renum '(X Y V) (list Y (- W X V)))
+      (mapcar '((@) (apply Renum @)) XVYs ) ))
+
+(de clockwise (Pic) # -> Pic'
+   (let (Data  (pic->xyvs Pic)
+         Width (length (car Pic))
+         Renum '((XYV) (clockwise-renumber XYV Width)))
+      (xyvs->pic (mapc Renum Data))))
+
+(de anticlock (Pic) # kind of just a hack for now, but it'll do :)
+   (clockwise (clockwise (clockwise Pic))) )
+
+(de cmd-rotate-clockwise ()
+   (put 'Tet 'pic (clockwise (current-shape))))
+(de cmd-rotate-anticlock ()
+   (put 'Tet 'pic (anticlock (current-shape))))
+
+(de test-rotation ()
+   (set-shape 'T)
+   (println "(current-shape)") (println (current-shape))
+   (println "DATA := pic->xyvs:")  (println (setq DATA (pic->xyvs (current-shape))))
+   (println "(xyvs->pic DATA)") (println (xyvs->pic DATA))
+   (println "sorted") (println (sort-by-yx (pic->xyvs (current-shape))))
+   (println "regrouped") (println (group-by-y (sort-by-yx (pic->xyvs (current-shape)))))
+   (println "clockwise-renumber:") (println (clockwise-renumber DATA))
+   (println "all together now:") (println (clockwise(current-shape))) )
 
 # -- command dispatch ------------------------------------------
 
@@ -136,16 +207,20 @@
       ("s" (cmd-s))
       ("t" (cmd-t))
 
-      ("I" (put 'Tet '= 'I))
-      ("O" (put 'Tet '= 'O))
-      ("Z" (put 'Tet '= 'Z))
-      ("S" (put 'Tet '= 'S))
-      ("J" (put 'Tet '= 'J))
-      ("L" (put 'Tet '= 'L))
-      ("T" (put 'Tet '= 'T))
- ) ))
+      (")" (cmd-rotate-clockwise))
+      ("(" (cmd-rotate-anticlock))
+
+      ("I" (set-shape 'I))
+      ("O" (set-shape 'O))
+      ("Z" (set-shape 'Z))
+      ("S" (set-shape 'S))
+      ("J" (set-shape 'J))
+      ("L" (set-shape 'L))
+      ("T" (set-shape 'T))
+ ) ) )
 
 (de main ()
+   (set-shape 'T)
    (cmd-c)
    (while (ls>q (line))
       (while (q?)
