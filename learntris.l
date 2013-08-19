@@ -170,14 +170,12 @@
 
 (de maprows (F Rows) (mapcar '((Row) (apply F Row)) Rows))
 
-(de clockwise-renumber (XYVs W) # -> XYVs'
-   (maprows '((X Y V) (list Y (- W X) V)) XYVs))
-
 (de clockwise (Pic) # -> Pic'
-   (let (Data  (pic->xyvs Pic)
-         Width (length (car Pic))
-         Renum '((XYV) (clockwise-renumber XYV Width)))
-      (xyvs->pic (mapc Renum Data))))
+   (let (W (length (car Pic)))
+      (xyvs->pic
+         (maprows
+            '((X Y V) (list Y (- W X 1) V))
+            (pic->xyvs (current-shape)) ) ) ) )
 
 (de anticlock (Pic) # kind of just a hack for now, but it'll do :)
    (clockwise (clockwise (clockwise Pic))) )
@@ -200,7 +198,6 @@
       (xyvs->pic DATA)
       (sort-by-yx (pic->xyvs (current-shape)))
       (group-by-y (sort-by-yx (pic->xyvs (current-shape))))
-      (clockwise-renumber DATA 3)
       (clockwise (current-shape)) ) )
 
 # -- command dispatch ------------------------------------------
