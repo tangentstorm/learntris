@@ -185,15 +185,21 @@
 (de cmd-rotate-anticlock ()
    (put 'Tet 'pic (anticlock (current-shape))))
 
+(de print-eval ARGS # prints each argument, followed by the result of evaluating it
+   (for q ARGS
+      (prinl "-> " (str q))
+      (println (eval q)) ) )
+
 (de test-rotation ()
    (set-shape 'T)
-   (println "(current-shape)") (println (current-shape))
-   (println "DATA := pic->xyvs:")  (println (setq DATA (pic->xyvs (current-shape))))
-   (println "(xyvs->pic DATA)") (println (xyvs->pic DATA))
-   (println "sorted") (println (sort-by-yx (pic->xyvs (current-shape))))
-   (println "regrouped") (println (group-by-y (sort-by-yx (pic->xyvs (current-shape)))))
-   (println "clockwise-renumber:") (println (clockwise-renumber DATA))
-   (println "all together now:") (println (clockwise(current-shape))) )
+   (print-eval
+      (current-shape)
+      (setq DATA (pic->xyvs (current-shape)))
+      (xyvs->pic DATA)
+      (sort-by-yx (pic->xyvs (current-shape)))
+      (group-by-y (sort-by-yx (pic->xyvs (current-shape))))
+      (clockwise-renumber DATA 3)
+      (clockwise (current-shape)) ) )
 
 # -- command dispatch ------------------------------------------
 
