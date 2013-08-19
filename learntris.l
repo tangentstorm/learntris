@@ -166,10 +166,12 @@
          (for Row Groups
             # cdr to strip Y, map cadr to extract vals
             (link (mapcar cadr (cdr Row))) ) ) ) )
-   
+
+
+(de maprows (F Rows) (mapcar '((Row) (apply F Row)) Rows))
+
 (de clockwise-renumber (XYVs W) # -> XYVs'
-   (let (Transform '((Row) (apply '((X Y V) (list Y (- W X) V)) Row) ) )
-      (mapcar Transform XYVs) ) )
+   (maprows '((X Y V) (list Y (- W X) V)) XYVs))
 
 (de clockwise (Pic) # -> Pic'
    (let (Data  (pic->xyvs Pic)
