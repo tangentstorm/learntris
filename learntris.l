@@ -210,6 +210,7 @@
       ("q" (bye))
       ("s" (cmd-s))
       ("t" (cmd-t))
+      (";" (prinl ""))
 
       (")" (cmd-rotate-clockwise))
       ("(" (cmd-rotate-anticlock))
@@ -221,7 +222,7 @@
       ("J" (set-shape 'J))
       ("L" (set-shape 'L))
       ("T" (set-shape 'T))
- ) ) )
+ ) ))
 
 (de main ()
    (set-shape 'T)
