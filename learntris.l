@@ -186,7 +186,7 @@
 
 (de print-eval ARGS # prints each argument, followed by the result of evaluating it
    (for q ARGS
-      (prinl "-> " (str q))
+      (println '-> q)
       (println (eval q)) ) )
 
 (de test-rotation ()
@@ -222,7 +222,7 @@
       ("J" (set-shape 'J))
       ("L" (set-shape 'L))
       ("T" (set-shape 'T))
- ) ))
+ ) )
 
 (de main ()
    (set-shape 'T)
