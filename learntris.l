@@ -175,7 +175,7 @@
       (xyvs->pic
          (maprows
             '((X Y V) (list Y (- W X 1) V))
-            (pic->xyvs (current-shape)) ) ) ) )
+            (pic->xyvs Pic) ) ) ) )
 
 (de anticlock (Pic) # kind of just a hack for now, but it'll do :)
    (clockwise (clockwise (clockwise Pic))) )
