@@ -170,15 +170,15 @@
 
 (de maprows (F Rows) (mapcar '((Row) (apply F Row)) Rows))
 
-(de clockwise (Pic) # -> Pic'
+(de anticlock (Pic) # -> Pic'
    (let (W (length (car Pic)))
       (xyvs->pic
          (maprows
             '((X Y V) (list Y (- W X 1) V))
             (pic->xyvs Pic) ) ) ) )
 
-(de anticlock (Pic) # kind of just a hack for now, but it'll do :)
-   (clockwise (clockwise (clockwise Pic))) )
+(de clockwise (Pic) # kind of just a hack for now, but it'll do :)
+   (anticlock (anticlock (anticlock Pic))) )
 
 (de cmd-rotate-clockwise ()
    (put 'Tet '= (clockwise (current-shape))))
