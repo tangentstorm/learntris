@@ -168,8 +168,10 @@
             (link (mapcar cadr (cdr Row))) ) ) ) )
    
 (de clockwise-renumber (XYVs W) # -> XYVs'
-   (let (Renum '(X Y V) (list Y (- W X V)))
-      (mapcar '((@) (apply Renum @)) XVYs ) ))
+   (make
+      (for Each XYVs
+         (match '(@X @Y @V) Each)
+         (link (list (car @Y) (- W (car @X)) (car @V))) ) ) )
 
 (de clockwise (Pic) # -> Pic'
    (let (Data  (pic->xyvs Pic)
