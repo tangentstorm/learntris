@@ -159,7 +159,7 @@
 (de xyv->yxv (XYV)
    (apply '((X Y V) (list Y X V)) XYV))
 (de group-by-y (XYVs) # [(X Y V)] -> [(Y [(X V)])]
-   (group (mapc xyv->yxv XYVs) ))
+   (group (mapcar 'xyv->yxv XYVs) ))
 (de xyvs->pic (XYVs)
    (make
       (let (Groups (group-by-y (sort-by-yx XYVs)))
