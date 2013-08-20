@@ -50,7 +50,6 @@
 (de cmd-p () # print the matrix
    (show-grid *M) )
 
-
 # -- registers -------------------------------------------------
 # picolisp seems to store associative arrays in a global tree,
 # indexed by two keys. The first key seems to selects the list,
@@ -90,6 +89,8 @@
 
 # -- tetraminos -------------------------------------------------
 
+(de *X 0) (de *Y 0) # coordinates of the falling piece
+
 (put 'Tet 'I
    '(( - - - - )
      ( c c c c )
@@ -128,13 +129,24 @@
 (de cmd-t () # show current tetramino
    (show-grid (current-shape)))
 
+(de xy: (X Y)
+   (setq *X X)
+   (setq *Y Y))
 
 (de set-shape (QuotedChar)
-   (put 'Tet '= (get 'Tet QuotedChar)) )
+   (put 'Tet '= (get 'Tet QuotedChar))
+   (apply xy: # spawn positions for each shape:
+      (case QuotedChar
+         ("I" (3 0))
+         ("O" (4 0))
+         ("L" (3 0))
+         ("J" (3 0))
+         ("S" (3 0))
+         ("Z" (3 0))
+         ("T" (3 0)) ) ) )
 
 (de current-shape ()
    (get 'Tet '=) )
-
 
 # -- grid rotations --------------------------------------------
 #
@@ -157,7 +169,7 @@
          (link (list (inc 'X) Y Val)) ) ) )
 
 (de pic->xyvs (Pic)
-   (make 
+   (make
       (setq Y -1)
       (for Row Pic
          (chain (row->xyv Row (inc 'Y))) ) ) )
@@ -208,6 +220,54 @@
       (group-by-y (sort-by-yx (pic->xyvs (current-shape))))
       (clockwise (current-shape)) ) )
 
+
+# -- combined display  -----------------------------------------
+
+(de same-xy (CellA CellB)
+   (and
+      (= (car  CellB) (car CellA))
+      (= (cadr CellA) (cadr CellB)) ) )
+
+(de xyv-with-v (XYV V) # -> new xyv with old xy and new v
+   (list (car XYV) (cadr XYV) V))
+
+(de xyv-get-v (XYV) (caddr XYV))
+
+(de xyvs-translate (DX DY XYVs)
+   (maprows '((X Y V) (list (+ X DX) (+ Y DY) V))
+      XYVs ) )
+
+(de xyvs-upcase (XYVs)
+   (maprows '((X Y V) (list X Y (any (uppc V))))
+      XYVs ) )
+
+(de nil? (X) (= X NIL))
+
+(de xyvs-update (DstData SrcData) # in xyv format
+   (make
+      (use (Src SrcQ Dst DstQ Src)
+         (apply fifo (sort-by-yx SrcData) 'SrcQ)
+         (apply fifo (sort-by-yx DstData) 'DstQ)
+         (setq Src (fifo 'SrcQ))
+         (while (setq Dst (fifo 'DstQ))
+            (if (nil? Src)
+               (link Dst)
+               (if (same-xy Src Dst)
+                  (prog
+                     (link Src)
+                     (setq Src (fifo 'SrcQ)) )
+                  (link Dst) ) ) ) ) ) )
+
+(de cmd-print-combined () # print the matrix with the current shape
+   (show-grid
+      (xyvs->pic
+         (xyvs-update
+            (pic->xyvs *M)
+            (xyvs-translate *X *Y
+               (xyvs-upcase
+                  (pic->xyvs (current-shape)) ) ) ) ) ) )
+
+
 # -- command dispatch ------------------------------------------
 
 (de dispatch (Ch)
@@ -216,6 +276,7 @@
       ("c" (cmd-c))
       ("g" (cmd-g))
       ("p" (cmd-p))
+      ("P" (cmd-print-combined))
       ("q" (bye))
       ("s" (cmd-s))
       ("t" (cmd-t))
