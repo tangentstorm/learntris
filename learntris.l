@@ -267,6 +267,29 @@
                (xyvs-upcase
                   (pic->xyvs (current-shape)) ) ) ) ) ) )
 
+# -- movement  -------------------------------------------------
+
+(de grid-width (G)
+   (use (W)
+      (prog
+         (setq W 0)
+         (maprows
+            '((X Y V) (when (and (<> V '-) (> X W))
+                         (setq W X) ) )
+            G )
+         W ) ) )
+
+(de nudge-< ()
+   (setq *X (max (- *X 1) 0)))
+
+(de nudge-> ()
+   (setq *X (min (+ *X 1)
+               (- 9 (grid-width
+                       (pic->xyvs (current-shape)) ) ) ) ) )
+
+(de nudge-v ()
+   (setq *Y (min (+ *Y 1) 21)))
+
 
 # -- command dispatch ------------------------------------------
 
@@ -280,6 +303,9 @@
       ("q" (bye))
       ("s" (cmd-s))
       ("t" (cmd-t))
+      ("<" (nudge-<))
+      (">" (nudge->))
+      ("v" (nudge-v))
       (";" (prinl ""))
 
       (")" (cmd-rotate-clockwise))
