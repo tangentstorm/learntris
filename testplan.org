@@ -508,8 +508,8 @@ Use upper case letters.
 #+name: spawn.L
 #+begin_src
 > cLPq
-. . . . . o . . . . #  0
-. . . o o o . . . . #  1
+. . . . . O . . . . #  0
+. . . O O O . . . . #  1
 . . . . . . . . . . #  2
 . . . . . . . . . . #  3
 . . . . . . . . . . #  4
@@ -536,8 +536,8 @@ Use upper case letters.
 #+name: spawn.J
 #+begin_src
 > cJPq
-. . . b . . . . . . #  0
-. . . b b b . . . . #  1
+. . . B . . . . . . #  0
+. . . B B B . . . . #  1
 . . . . . . . . . . #  2
 . . . . . . . . . . #  3
 . . . . . . . . . . #  4
@@ -564,8 +564,8 @@ Use upper case letters.
 #+name: spawn.Z
 #+begin_src
 > cZPq
-. . . r r . . . . . #  0
-. . . . r r . . . . #  1
+. . . R R . . . . . #  0
+. . . . R R . . . . #  1
 . . . . . . . . . . #  2
 . . . . . . . . . . #  3
 . . . . . . . . . . #  4
@@ -592,8 +592,8 @@ Use upper case letters.
 #+name: spawn.S
 #+begin_src
 > cSPq
-. . . . g g . . . . #  0
-. . . g g . . . . . #  1
+. . . . G G . . . . #  0
+. . . G G . . . . . #  1
 . . . . . . . . . . #  2
 . . . . . . . . . . #  3
 . . . . . . . . . . #  4
@@ -621,7 +621,7 @@ Use upper case letters.
 #+begin_src
 > cIPq
 . . . . . . . . . . #  0
-. . . c c c c . . . #  1
+. . . C C C C . . . #  1
 . . . . . . . . . . #  2
 . . . . . . . . . . #  3
 . . . . . . . . . . #  4
@@ -648,8 +648,8 @@ Use upper case letters.
 #+name: spawn.T
 #+begin_src
 > cTPq
-. . . . m . . . . . #  0
-. . . m m m . . . . #  1
+. . . . M . . . . . #  0
+. . . M M M . . . . #  1
 . . . . . . . . . . #  2
 . . . . . . . . . . #  3
 . . . . . . . . . . #  4
@@ -679,8 +679,8 @@ Use upper case letters.
 #+name: nudge.<
 #+begin_src
 > cT<Pq
-. . . m . . . . . . #  0
-. . m m m . . . . . #  1
+. . . M . . . . . . #  0
+. . M M M . . . . . #  1
 . . . . . . . . . . #  2
 . . . . . . . . . . #  3
 . . . . . . . . . . #  4
@@ -708,8 +708,8 @@ Use upper case letters.
 #+name: nudge.>
 #+begin_src
 > cT>Pq
-. . . . . m . . . . #  0
-. . . . m m m . . . #  1
+. . . . . M . . . . #  0
+. . . . M M M . . . #  1
 . . . . . . . . . . #  2
 . . . . . . . . . . #  3
 . . . . . . . . . . #  4
@@ -738,8 +738,8 @@ Use upper case letters.
 #+begin_src
 > cTvPq
 . . . . . . . . . . #  0
-. . . . m . . . . . #  1
-. . . m m m . . . . #  2
+. . . . M . . . . . #  1
+. . . M M M . . . . #  2
 . . . . . . . . . . #  3
 . . . . . . . . . . #  4
 . . . . . . . . . . #  5
@@ -770,8 +770,8 @@ Use upper case letters.
 #+begin_src
 # nudging <<< should put T on the left wall
 > cT<<<P
-. m . . . . . . . . #  0
-m m m . . . . . . . #  1
+. M . . . . . . . . #  0
+M M M . . . . . . . #  1
 . . . . . . . . . . #  2
 . . . . . . . . . . #  3
 . . . . . . . . . . #  4
@@ -794,8 +794,8 @@ m m m . . . . . . . #  1
 . . . . . . . . . . # 21
 # nudging again should do nothing:
 > <Pq
-. m . . . . . . . . #  0
-m m m . . . . . . . #  1
+. M . . . . . . . . #  0
+M M M . . . . . . . #  1
 . . . . . . . . . . #  2
 . . . . . . . . . . #  3
 . . . . . . . . . . #  4
@@ -825,8 +825,8 @@ m m m . . . . . . . #  1
 #+begin_src
 # nudging >>>> should put T on the right wall
 > cT>>>>P
-. . . . . . . . m . #  0
-. . . . . . . m m m #  1
+. . . . . . . . M . #  0
+. . . . . . . M M M #  1
 . . . . . . . . . . #  2
 . . . . . . . . . . #  3
 . . . . . . . . . . #  4
@@ -849,8 +849,8 @@ m m m . . . . . . . #  1
 . . . . . . . . . . # 21
 # nudging again should do nothing:
 > >Pq
-. . . . . . . . m . #  0
-. . . . . . . m m m #  1
+. . . . . . . . M . #  0
+. . . . . . . M M M #  1
 . . . . . . . . . . #  2
 . . . . . . . . . . #  3
 . . . . . . . . . . #  4
