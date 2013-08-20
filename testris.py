@@ -21,7 +21,7 @@ will be replaced with instructions for implementing your
 first feature.
 """
 from __future__ import print_function # let's keep it 3.x compatible
-import sys, os, glob, subprocess, difflib, pprint, time
+import sys, os, glob, subprocess, difflib, time
 import extract
 
 class Test(object):
@@ -107,7 +107,7 @@ def run_test(program, opcodes):
     if actual != expected:
         diff = list(difflib.Differ().compare(actual, expected))
         raise TestFailure('output mismatch:\n%s'
-                          % pprint.pformat(diff))
+                          % '\n'.join(diff))
 
 def run_tests(program_name):
     for i, test in enumerate(extract.tests()):
