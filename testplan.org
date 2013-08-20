@@ -470,13 +470,12 @@ m m .
 . m .
 #+end_src
 
-** TODO implement movement
-
-*** TODO [0/7] draw a shape in the matrix at the spawn point.
+** TODO [2/5] implement movement
+*** DONE [7/7] draw a shape in the matrix at the spawn point.
 
 Use upper case letters.
 
-**** TODO the O
+**** DONE the O
 #+name: spawn.O
 #+begin_src
 > cOPq
@@ -504,7 +503,7 @@ Use upper case letters.
 . . . . . . . . . . # 21
 #+end_src
 
-**** TODO the L
+**** DONE the L
 #+name: spawn.L
 #+begin_src
 > cLPq
@@ -532,7 +531,7 @@ Use upper case letters.
 . . . . . . . . . . # 21
 #+end_src
 
-**** TODO the J
+**** DONE the J
 #+name: spawn.J
 #+begin_src
 > cJPq
@@ -560,7 +559,7 @@ Use upper case letters.
 . . . . . . . . . . # 21
 #+end_src
 
-**** TODO the Z
+**** DONE the Z
 #+name: spawn.Z
 #+begin_src
 > cZPq
@@ -588,7 +587,7 @@ Use upper case letters.
 . . . . . . . . . . # 21
 #+end_src
 
-**** TODO the S
+**** DONE the S
 #+name: spawn.S
 #+begin_src
 > cSPq
@@ -616,7 +615,7 @@ Use upper case letters.
 . . . . . . . . . . # 21
 #+end_src
 
-**** TODO the I
+**** DONE the I
 #+name: spawn.I
 #+begin_src
 > cIPq
@@ -644,7 +643,7 @@ Use upper case letters.
 . . . . . . . . . . # 21
 #+end_src
 
-**** TODO the T
+**** DONE the T
 #+name: spawn.T
 #+begin_src
 > cTPq
@@ -672,9 +671,8 @@ Use upper case letters.
 . . . . . . . . . . # 21
 #+end_src
 
-
-*** TODO [0/3] basic left/right/down movement ( < v > )
-**** TODO <
+*** DONE [3/3] basic left/right/down movement ( < v > )
+**** DONE <
 
 #+name: nudge.<
 #+begin_src
@@ -703,7 +701,7 @@ Use upper case letters.
 . . . . . . . . . . # 21
 #+end_src
 
-**** TODO >
+**** DONE >
 
 #+name: nudge.>
 #+begin_src
@@ -732,7 +730,7 @@ Use upper case letters.
 . . . . . . . . . . # 21
 #+end_src
 
-**** TODO v
+**** DONE v
 
 #+name: nudge.v
 #+begin_src
@@ -761,10 +759,8 @@ Use upper case letters.
 . . . . . . . . . . # 21
 #+end_src
 
-
-*** TODO [0/5] collision detection
-
-**** TODO left wall
+*** TODO [2/5] collision detection
+**** DONE left wall
 
 #+name: wall.left
 #+begin_src
@@ -818,8 +814,7 @@ M M M . . . . . . . #  1
 . . . . . . . . . . # 21
 #+end_src
 
-
-**** TODO right wall
+**** DONE right wall
 
 #+name: wall.right
 #+begin_src
@@ -877,7 +872,7 @@ M M M . . . . . . . #  1
 
 #+name: wall.right2
 #+begin_src
-> T ) >>>> > Pq
+> T ( >>>> > Pq
 . . . . . . . . . M #  0
 . . . . . . . . M M #  1
 . . . . . . . . . M #  2
@@ -977,7 +972,6 @@ y y g g b b m m m . # 21
 y y r g g b . m . . # 20
 y y g g b b m m m . # 21
 #+end_src
-
 
 *** TODO gravity during step
 *** TODO hard drops
