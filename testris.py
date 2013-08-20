@@ -118,7 +118,7 @@ def run_tests(program_name):
             run_test(program, opcodes)
             print("Test %d passed" % (i+1))
         except (TimeoutFailure, TestFailure) as e:
-            print("Test %d failed: %s" % (i+1, e))
+            print("Test %d (%s) failed: %s" % (i+1, test.name, e))
             break
         print("\n") # add 2 blank lines between tests
 
