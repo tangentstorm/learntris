@@ -16,23 +16,39 @@
 (de +ch () # same as 'q? but also cache result in *ch
    (setq *ch (q?)) *ch)
 
+
+# -- routines to read and print a grid  ------------------------
+
+(de sym->char (Sym)
+   (if (= Sym '-) "." (sym Sym)) )
+
+(de row->str (Row)
+   (glue " " (mapcar sym->char Row)) )
+
+(de show-grid (Grid)
+   (mapc prinl (mapcar row->str Grid)) )
+
+(de str->row (Str)
+   (make
+      (for Ch (chop Str)
+         (cond
+            ((= Ch " "))                # skip spaces
+            ((= Ch ".") (link '-))      # dots -> dashes
+            (T (link (any Ch))) ) ) ) ) # letters become symbols
+
 # -- the matrix ------------------------------------------------
 # "matrix" is the official term for the 22 * 10 grid of cells.
 
 (de *M) # matrix
 
 (de cmd-c () # clear the matrix
-   (setq *M ())
-   (do 22
-      (setq *M (append *M '(". . . . . . . . . ."))) ) )
+   (setq *M (make (do 22 (link '( - - - - - - - - - - ))))) )
 
 (de cmd-g () # given the following matrix...
-   (setq *M ())
-   (do 22
-      (setq *M (append *M (list (line)))) ) )
+   (setq *M (make (do 22 (link (str->row (line)))))))
 
 (de cmd-p () # print the matrix
-   (mapc prinl *M) )
+   (show-grid *M) )
 
 
 # -- registers -------------------------------------------------
@@ -60,13 +76,13 @@
 # -- stepping --------------------------------------------------
 
 (de full? (Line)
-   (not (member "." Line)) )
+   (not (member '- Line)) )
 
 (de step! ()
    (setq *M (filter '((x) (not (full? x))) *M))
    (while (< (length *M) 22)
       (%add '"n" 1) (%add '"s" 100)
-      (setq *M (insert 0 *M '(". . . . . . . . . ."))) ) )
+      (setq *M (insert 0 *M '( - - - - - - - - - - ))) ) )
 
 (de cmd-s () # step the interpreter
    (step!) )
@@ -109,16 +125,9 @@
      ( m m m )
      ( - - - )))
 
-(de sym->char (Sym)
-   (if (= Sym '-) "." (sym Sym)) )
-
-(de row->str (Row)
-   (glue " " (mapcar sym->char Row)))
-
-
 (de cmd-t () # show current tetramino
-   (mapc prinl
-      (mapcar row->str (current-shape)) ) )
+   (show-grid (current-shape)))
+
 
 (de set-shape (QuotedChar)
    (put 'Tet '= (get 'Tet QuotedChar)) )
