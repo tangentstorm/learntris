@@ -105,7 +105,7 @@ def run_test(program, opcodes):
     actual = [line.strip() for line in program.stdout.read().split("\n")]
     while actual and actual[-1] == "": actual.pop()
     if actual != expected:
-        diff = list(difflib.Differ().compare(actual, expected))
+        diff = list(difflib.Differ().compare(expected, actual))
         raise TestFailure('output mismatch:\n%s'
                           % '\n'.join(diff))
 
