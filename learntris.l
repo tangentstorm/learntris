@@ -190,6 +190,12 @@
 
 (de maprows (F Rows) (mapcar '((Row) (apply F Row)) Rows))
 
+# TODO: maprows->for-rows ?
+# turns out the function is usually pretty long and Rows
+# is usually just a variable name, so it reads better with
+# rows coming first. hence find-rows:
+(de find-rows (Rows F) (filter '((Row) (apply F Row)) Rows))
+
 (de anticlock (Pic) # -> Pic'
    (let (W (length (car Pic)))
       (xyvs->pic
@@ -243,10 +249,37 @@
 
 (de nil? (X) (= X NIL))
 
+(de xyvs-solids (G) (find-rows G '((X Y V) (<> V '-))))
+
+(de xyvs->bounds (G) # filter with xyvs-solids first if you don't want empty spaces
+   (use (X0 X1 Y0 Y1)
+      # extract the first data point as our reference
+      (setq X0 (setq X1 (caar G)))
+      (setq Y0 (setq Y1 (cadar G)))
+      (maprows
+         '((X Y V)
+           (when (< X X0) (setq X0 X))
+           (when (< Y Y0) (setq Y0 Y))
+           (when (> X X1) (setq X1 X))
+           (when (> Y Y1) (setq Y1 Y)) )
+         G)
+      (list X0 Y0 X1 Y1) ) )
+
+(de xyvs-clip (bounds xyvs)
+   (let (X0 (pop 'bounds)
+         Y0 (pop 'bounds)
+         X1 (pop 'bounds)
+         Y1 (pop 'bounds))
+      (find-rows xyvs
+         '((X Y V) (and
+                      (>= X X0) (<= X X1)
+                      (>= Y Y0) (<= Y Y1) ) ) ) ) )
+
 (de xyvs-update (DstData SrcData) # in xyv format
    (make
-      (use (Src SrcQ Dst DstQ Src)
-         (apply fifo (sort-by-yx SrcData) 'SrcQ)
+      (use (SrcQ Dst DstQ Src)
+         (apply fifo (sort-by-yx
+                        (xyvs-clip (xyvs->bounds DstData) SrcData) ) 'SrcQ )
          (apply fifo (sort-by-yx DstData) 'DstQ)
          (setq Src (fifo 'SrcQ))
          (while (setq Dst (fifo 'DstQ))
@@ -270,14 +303,8 @@
 # -- movement  -------------------------------------------------
 
 (de grid-width (G)
-   (use (W)
-      (prog
-         (setq W 0)
-         (maprows
-            '((X Y V) (when (and (<> V '-) (> X W))
-                         (setq W X) ) )
-            G )
-         W ) ) )
+   (apply '((X0 Y0 X1 Y1) (- X1 X0))
+      (xyvs->bounds G)))
 
 (de nudge-< ()
    (setq *X (max (- *X 1) 0)))
@@ -285,7 +312,8 @@
 (de nudge-> ()
    (setq *X (min (+ *X 1)
                (- 9 (grid-width
-                       (pic->xyvs (current-shape)) ) ) ) ) )
+                       (xyvs-solids
+                          (pic->xyvs (current-shape)) ) ) ) ) ) )
 
 (de nudge-v ()
    (setq *Y (min (+ *Y 1) 21)))
