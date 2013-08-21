@@ -291,14 +291,19 @@
                      (setq Src (fifo 'SrcQ)) )
                   (link Dst) ) ) ) ) ) )
 
+
+(de current-blocks () # translated and stripped
+   (xyvs-translate *X *Y
+      (xyvs-solids
+         (pic->xyvs (current-shape)) ) ) )
+
 (de cmd-print-combined () # print the matrix with the current shape
    (show-grid
       (xyvs->pic
          (xyvs-update
             (pic->xyvs *M)
-            (xyvs-translate *X *Y
-               (xyvs-upcase
-                  (pic->xyvs (current-shape)) ) ) ) ) ) )
+            (xyvs-upcase
+               (current-blocks) ) ) ) ) )
 
 # -- movement  -------------------------------------------------
 
@@ -315,9 +320,18 @@
                        (xyvs-solids
                           (pic->xyvs (current-shape)) ) ) ) ) ) )
 
-(de nudge-v ()
-   (setq *Y (min (+ *Y 1) 21)))
 
+(de ix (Ls Ix) # return Ix'th element of the list (0-based)
+   (car (nth Ls (+ Ix 1))) )
+
+(setq *Floor 21)
+(de nudge-v ()
+   (inc '*Y)
+   (let (Bounds (xyvs->bounds (current-blocks))
+         Y1 (ix Bounds 3))
+      (when (>= *Y 20)
+         (prog
+            (when (> Y1 *Floor) (dec '*Y)) ) ) ) )
 
 # -- command dispatch ------------------------------------------
 
