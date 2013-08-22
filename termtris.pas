@@ -27,8 +27,12 @@ procedure Update(s : string);
     cmd.WriteLine('Pq');
     for i := 1 to 22 do begin
       for ch in cmd.ReadLine do begin
-	if ch in cw.ccolset then kvm.fg(ch) // color codes ('krgybmcwKRGYBMCW')
-	else if ch = '.' then kvm.fg('K');  // dark gray
+	// color codes ('krgybmcwKRGYBMCW')
+	if ch in cw.ccolset then kvm.fg(ch)
+	else if ch = 'O' then fg($D6)
+	else if ch = '.' then
+          if i > 2 then kvm.fg('K')  // dark gray
+	  else kvm.fg('k'); // black
 	Write(ch);
       end;
       WriteLn;
