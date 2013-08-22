@@ -24,20 +24,30 @@ procedure Update(s : string);
     kvm.gotoxy(0,0);
     cmd := BuildProcess;
     if length(s) > 0 then cmd.WriteLine(s);
-    cmd.WriteLine('Pq');
-    for i := 1 to 22 do begin
+    cmd.WriteLine('P');
+    cmd.WriteLine('?b');
+    cmd.WriteLine('q');
+    for i := 0 to 21 do begin
       for ch in cmd.ReadLine do begin
 	// color codes ('krgybmcwKRGYBMCW')
 	if ch in cw.ccolset then kvm.fg(ch)
-	else if ch = 'O' then fg($D6)
-	else if ch = '.' then
-          if i > 2 then kvm.fg('K')  // dark gray
-	  else kvm.fg('k'); // black
+	else
+	  case ch of
+	    'O'	: fg($D6); // light orange
+	    'o' : fg($AC); // dark orange
+	    '.' : if i > 2 then kvm.fg('K')  // dark gray
+		  else kvm.fg('k'); // black
+	  end;
 	Write(ch);
       end;
-      WriteLn;
+      WriteLn; ClrEol;
     end;
-    kvm.fg('W'); write(s); kvm.ClrEol;
+    // show current bounds:
+    cw.cwritexy(25, 0, '|w' + cmd.ReadLine());
+    kvm.ClrEol;
+    cw.colorxy(0, 23, $7, s);
+    kvm.ClrEol;
+
   end;
  
 var
