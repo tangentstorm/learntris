@@ -338,8 +338,7 @@
 (de stamp-shape ()
    (setq *M (xyvs->pic
                (xyvs-update (pic->xyvs *M)
-                  (xyvs-translate *X *Y
-                     (pic->xyvs (current-shape)) ) ) ) ) )
+                  (current-blocks) ) ) ) )
 
 (de next-shape ()
    (set-shape 'T)) # TODO : bag
