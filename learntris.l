@@ -316,6 +316,37 @@
 
 # -- movement  -------------------------------------------------
 
+(setq *WALLS
+   (xyvs-translate -1 0
+      (xyvs-solids
+         (pic->xyvs
+               # 0 1 2 3 4 5 6 7 8 9
+            '((X - - - - - - - - - - X) # 0
+              (X - - - - - - - - - - X) # 1
+              (X - - - - - - - - - - X) # 2
+              (X - - - - - - - - - - X) # 3
+              (X - - - - - - - - - - X) # 4
+              (X - - - - - - - - - - X) # 5
+              (X - - - - - - - - - - X) # 6
+              (X - - - - - - - - - - X) # 7
+              (X - - - - - - - - - - X) # 8
+              (X - - - - - - - - - - X) # 9
+              (X - - - - - - - - - - X) # 10
+              (X - - - - - - - - - - X) # 11
+              (X - - - - - - - - - - X) # 12
+              (X - - - - - - - - - - X) # 13
+              (X - - - - - - - - - - X) # 14
+              (X - - - - - - - - - - X) # 15
+              (X - - - - - - - - - - X) # 16
+              (X - - - - - - - - - - X) # 17
+              (X - - - - - - - - - - X) # 18
+              (X - - - - - - - - - - X) # 19
+              (X - - - - - - - - - - X) # 20
+              (X - - - - - - - - - - X) # 21
+              (X X X X X X X X X X X X) )))))
+
+
+
 (de grid-width (G)
    (apply '((X0 Y0 X1 Y1) (- X1 X0))
       (xyvs->bounds G)))
@@ -333,15 +364,33 @@
 (de ix (Ls Ix) # return Ix'th element of the list (0-based)
    (car (nth Ls (+ Ix 1))) )
 
-(setq *Floor 21)
+(de matrix-blocks ()
+   (xyvs-solids (pic->xyvs *M)))
+
+(de collision? ()
+   (use Result
+      # first, find the blocks that fall within the bounds of the shape
+      (let (Blocks (current-blocks)
+            Bounds (xyvs->bounds Blocks)
+            # blocks in the matrix will never overlap with the walls,
+            # so there's no need for a sophisticated merge here.
+            ToTest (make
+                      (chain (xyvs-clip Bounds *WALLS))
+                      (chain (xyvs-clip Bounds (matrix-blocks))) )
+
+            # we can re-use our relational join to get the overlap:
+            OnExtraDst '((Row) NIL) # do nothing
+            OnCollide  '((Row) (setq Result T)) )
+
+         (setq Result NIL)
+         (xyvs-join ToTest Blocks OnExtraDst OnCollide)
+         Result ) ) )
 
 (de nudge-v () # returns T if moved, NIL if blocked
    (inc '*Y)
-   (let (Bounds (xyvs->bounds (current-blocks))
-         Y1 (ix Bounds 3))
-      (if (> Y1 *Floor)
-         (prog (dec '*Y) NIL)
-         T ) ) ) )
+   (if (collision?)
+      (prog (dec '*Y) NIL)
+      T ) )
 
 (de stamp-shape ()
    (setq *M (xyvs->pic
