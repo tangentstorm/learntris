@@ -69,7 +69,9 @@
    (%set reg (+ amt (%get reg))) )
 
 (de cmd-? () # query a register variable
-   (println (%get (+ch))) )
+   (if (= (+ch) "b")
+      (print-eval (current-bounds))
+      (println (%get *Ch)) ) )
 
 
 # -- stepping --------------------------------------------------
@@ -305,6 +307,9 @@
    (xyvs-translate *X *Y
       (xyvs-solids
          (pic->xyvs (current-shape)) ) ) )
+
+(de current-bounds ()
+   (xyvs->bounds (current-blocks)))
 
 (de cmd-print-combined () # print the matrix with the current shape
    (show-grid
