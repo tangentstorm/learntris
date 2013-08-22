@@ -69,7 +69,9 @@
    (%set reg (+ amt (%get reg))) )
 
 (de cmd-? () # query a register variable
-   (println (%get (+ch))) )
+   (if (= (+ch) "b")
+      (print-eval (current-bounds))
+      (println (%get *Ch)) ) )
 
 
 # -- stepping --------------------------------------------------
@@ -265,37 +267,49 @@
          G)
       (list X0 Y0 X1 Y1) ) )
 
-(de xyvs-clip (bounds xyvs)
-   (let (X0 (pop 'bounds)
-         Y0 (pop 'bounds)
-         X1 (pop 'bounds)
-         Y1 (pop 'bounds))
-      (find-rows xyvs
+(de xyvs-clip (Bounds XYVs)
+   (let (X0 (pop 'Bounds)
+         Y0 (pop 'Bounds)
+         X1 (pop 'Bounds)
+         Y1 (pop 'Bounds))
+      (find-rows XYVs
          '((X Y V) (and
                       (>= X X0) (<= X X1)
                       (>= Y Y0) (<= Y Y1) ) ) ) ) )
 
-(de xyvs-update (DstData SrcData) # in xyv format
-   (make
-      (use (SrcQ Dst DstQ Src)
-         (apply fifo (sort-by-yx
-                        (xyvs-clip (xyvs->bounds DstData) SrcData) ) 'SrcQ )
-         (apply fifo (sort-by-yx DstData) 'DstQ)
-         (setq Src (fifo 'SrcQ))
-         (while (setq Dst (fifo 'DstQ))
-            (if (nil? Src)
-               (link Dst)
-               (if (same-xy Src Dst)
-                  (prog
-                     (link Src)
-                     (setq Src (fifo 'SrcQ)) )
-                  (link Dst) ) ) ) ) ) )
 
+(de xyvs-join (DstData SrcData OnExtraDst OnCollide)
+   # this is very much like a relational join.
+   # it probably could be cleaned up with a little more thought.
+   # (like it could have an OnExtraSrc rather than just clipping below.)
+   (use (SrcQ Dst DstQ Src)
+      (apply fifo
+         (sort-by-yx
+            (xyvs-clip (xyvs->bounds DstData) SrcData) ) 'SrcQ )
+      (apply fifo (sort-by-yx DstData) 'DstQ)
+      (setq Src (fifo 'SrcQ))
+      (while (setq Dst (fifo 'DstQ))
+         (if (nil? Src)
+            (OnExtraDst Dst)
+            (if (same-xy Src Dst)
+               (prog
+                  (OnCollide Src Dst)
+                  (setq Src (fifo 'SrcQ)) )
+               (OnExtraDst Dst) ) ) ) ) )
+
+(de xyvs-update (DstData SrcData) # in xyv format
+   (let (OnExtraDst '((Dst) (link Dst))
+         OnCollide  '((Src Dst) (link Src)))
+      (make
+         (xyvs-join DstData SrcData OnExtraDst OnCollide))))
 
 (de current-blocks () # translated and stripped
    (xyvs-translate *X *Y
       (xyvs-solids
          (pic->xyvs (current-shape)) ) ) )
+
+(de current-bounds ()
+   (xyvs->bounds (current-blocks)))
 
 (de cmd-print-combined () # print the matrix with the current shape
    (show-grid
@@ -306,6 +320,37 @@
                (current-blocks) ) ) ) ) )
 
 # -- movement  -------------------------------------------------
+
+(setq *WALLS
+   (xyvs-translate -1 0
+      (xyvs-solids
+         (pic->xyvs
+               # 0 1 2 3 4 5 6 7 8 9
+            '((X - - - - - - - - - - X) # 0
+              (X - - - - - - - - - - X) # 1
+              (X - - - - - - - - - - X) # 2
+              (X - - - - - - - - - - X) # 3
+              (X - - - - - - - - - - X) # 4
+              (X - - - - - - - - - - X) # 5
+              (X - - - - - - - - - - X) # 6
+              (X - - - - - - - - - - X) # 7
+              (X - - - - - - - - - - X) # 8
+              (X - - - - - - - - - - X) # 9
+              (X - - - - - - - - - - X) # 10
+              (X - - - - - - - - - - X) # 11
+              (X - - - - - - - - - - X) # 12
+              (X - - - - - - - - - - X) # 13
+              (X - - - - - - - - - - X) # 14
+              (X - - - - - - - - - - X) # 15
+              (X - - - - - - - - - - X) # 16
+              (X - - - - - - - - - - X) # 17
+              (X - - - - - - - - - - X) # 18
+              (X - - - - - - - - - - X) # 19
+              (X - - - - - - - - - - X) # 20
+              (X - - - - - - - - - - X) # 21
+              (X X X X X X X X X X X X) )))))
+
+
 
 (de grid-width (G)
    (apply '((X0 Y0 X1 Y1) (- X1 X0))
@@ -324,14 +369,46 @@
 (de ix (Ls Ix) # return Ix'th element of the list (0-based)
    (car (nth Ls (+ Ix 1))) )
 
-(setq *Floor 21)
-(de nudge-v ()
+(de matrix-blocks ()
+   (xyvs-solids (pic->xyvs *M)))
+
+(de collision? ()
+   (use Result
+      # first, find the blocks that fall within the bounds of the shape
+      (let (Blocks (current-blocks)
+            Bounds (xyvs->bounds Blocks)
+            # blocks in the matrix will never overlap with the walls,
+            # so there's no need for a sophisticated merge here.
+            ToTest (make
+                      (chain (xyvs-clip Bounds *WALLS))
+                      (chain (xyvs-clip Bounds (matrix-blocks))) )
+
+            # we can re-use our relational join to get the overlap:
+            OnExtraDst '((Row) NIL) # do nothing
+            OnCollide  '((Row) (setq Result T)) )
+
+         (setq Result NIL)
+         (xyvs-join ToTest Blocks OnExtraDst OnCollide)
+         Result ) ) )
+
+(de nudge-v () # returns T if moved, NIL if blocked
    (inc '*Y)
-   (let (Bounds (xyvs->bounds (current-blocks))
-         Y1 (ix Bounds 3))
-      (when (>= *Y 20)
-         (prog
-            (when (> Y1 *Floor) (dec '*Y)) ) ) ) )
+   (if (collision?)
+      (prog (dec '*Y) NIL)
+      T ) )
+
+(de stamp-shape ()
+   (setq *M (xyvs->pic
+               (xyvs-update (pic->xyvs *M)
+                  (current-blocks) ) ) ) )
+
+(de next-shape ()
+   (set-shape 'T)) # TODO : bag
+
+(de hard-drop ()
+   (while (nudge-v))
+   (stamp-shape)
+   (next-shape))
 
 # -- command dispatch ------------------------------------------
 
@@ -348,6 +425,7 @@
       ("<" (nudge-<))
       (">" (nudge->))
       ("v" (nudge-v))
+      ("V" (hard-drop))
       (";" (prinl ""))
 
       (")" (cmd-rotate-clockwise))
