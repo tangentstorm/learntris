@@ -325,13 +325,29 @@
    (car (nth Ls (+ Ix 1))) )
 
 (setq *Floor 21)
-(de nudge-v ()
+
+(de nudge-v () # returns T if moved, NIL if blocked
    (inc '*Y)
    (let (Bounds (xyvs->bounds (current-blocks))
          Y1 (ix Bounds 3))
       (when (>= *Y 20)
-         (prog
-            (when (> Y1 *Floor) (dec '*Y)) ) ) ) )
+         (if (> Y1 *Floor)
+            (prog (dec '*Y) NIL)
+            T ) ) ) )
+
+(de stamp-shape ()
+   (setq *M (xyvs->pic
+               (xyvs-update (pic->xyvs *M)
+                  (xyvs-translate *X *Y
+                     (pic->xyvs (current-shape)) ) ) ) ) )
+
+(de next-shape ()
+   (set-shape 'T)) # TODO : bag
+
+(de hard-drop ()
+   (while (not (nudge-v)))
+   (stamp-shape)
+   (next-shape))
 
 # -- command dispatch ------------------------------------------
 
@@ -348,6 +364,7 @@
       ("<" (nudge-<))
       (">" (nudge->))
       ("v" (nudge-v))
+      ("V" (hard-drop))
       (";" (prinl ""))
 
       (")" (cmd-rotate-clockwise))
