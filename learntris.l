@@ -275,22 +275,31 @@
                       (>= X X0) (<= X X1)
                       (>= Y Y0) (<= Y Y1) ) ) ) ) )
 
-(de xyvs-update (DstData SrcData) # in xyv format
-   (make
-      (use (SrcQ Dst DstQ Src)
-         (apply fifo (sort-by-yx
-                        (xyvs-clip (xyvs->bounds DstData) SrcData) ) 'SrcQ )
-         (apply fifo (sort-by-yx DstData) 'DstQ)
-         (setq Src (fifo 'SrcQ))
-         (while (setq Dst (fifo 'DstQ))
-            (if (nil? Src)
-               (link Dst)
-               (if (same-xy Src Dst)
-                  (prog
-                     (link Src)
-                     (setq Src (fifo 'SrcQ)) )
-                  (link Dst) ) ) ) ) ) )
 
+(de xyvs-join (DstData SrcData OnExtraDst OnCollide)
+   # this is very much like a relational join.
+   # it probably could be cleaned up with a little more thought.
+   # (like it could have an OnExtraSrc rather than just clipping below.)
+   (use (SrcQ Dst DstQ Src)
+      (apply fifo
+         (sort-by-yx
+            (xyvs-clip (xyvs->bounds DstData) SrcData) ) 'SrcQ )
+      (apply fifo (sort-by-yx DstData) 'DstQ)
+      (setq Src (fifo 'SrcQ))
+      (while (setq Dst (fifo 'DstQ))
+         (if (nil? Src)
+            (OnExtraDst Dst)
+            (if (same-xy Src Dst)
+               (prog
+                  (OnCollide Src Dst)
+                  (setq Src (fifo 'SrcQ)) )
+               (OnExtraDst Dst) ) ) ) ) )
+
+(de xyvs-update (DstData SrcData) # in xyv format
+   (let (OnExtraDst '((Dst) (link Dst))
+         OnCollide  '((Src Dst) (link Src)))
+      (make
+         (xyvs-join DstData SrcData OnExtraDst OnCollide))))
 
 (de current-blocks () # translated and stripped
    (xyvs-translate *X *Y
