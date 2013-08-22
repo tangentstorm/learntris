@@ -6,7 +6,7 @@
 # -- the input queue -------------------------------------------
 
 (de *Q)  # input queue
-(de *ch  "") # current char
+(de *Ch  "") # current char
 
 (de ls>q (Ls) # copy items in list to global queue
    (apply fifo Ls '*Q)) # then it returns the list
@@ -14,7 +14,7 @@
 (de q? () (fifo '*Q)) # next value in the queue, or nil
 
 (de +ch () # same as 'q? but also cache result in *ch
-   (setq *ch (q?)) *ch)
+   (setq *Ch (q?)) *Ch)
 
 
 # -- routines to read and print a grid  ------------------------
@@ -70,7 +70,7 @@
 
 (de cmd-? () # query a register variable
    (if (= (+ch) "b")
-      (print-eval (current-bounds))
+      (println (current-bounds))
       (println (%get *Ch)) ) )
 
 
