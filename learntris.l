@@ -283,9 +283,7 @@
    # it probably could be cleaned up with a little more thought.
    # (like it could have an OnExtraSrc rather than just clipping below.)
    (use (SrcQ Dst DstQ Src)
-      (apply fifo
-         (sort-by-yx
-            (xyvs-clip (xyvs->bounds DstData) SrcData) ) 'SrcQ )
+      (apply fifo (sort-by-yx SrcData) 'SrcQ)
       (apply fifo (sort-by-yx DstData) 'DstQ)
       (setq Src (fifo 'SrcQ))
       (while (setq Dst (fifo 'DstQ))
@@ -351,20 +349,9 @@
               (X X X X X X X X X X X X) )))))
 
 
-
 (de grid-width (G)
    (apply '((X0 Y0 X1 Y1) (- X1 X0))
       (xyvs->bounds G)))
-
-(de nudge-< ()
-   (setq *X (max (- *X 1) 0)))
-
-(de nudge-> ()
-   (setq *X (min (+ *X 1)
-               (- 9 (grid-width
-                       (xyvs-solids
-                          (pic->xyvs (current-shape)) ) ) ) ) ) )
-
 
 (de ix (Ls Ix) # return Ix'th element of the list (0-based)
    (car (nth Ls (+ Ix 1))) )
@@ -381,21 +368,31 @@
             # so there's no need for a sophisticated merge here.
             ToTest (make
                       (chain (xyvs-clip Bounds *WALLS))
-                      (chain (xyvs-clip Bounds (matrix-blocks))) )
+                      (chain (xyvs-clip Bounds (pic->xyvs *M))) )
 
             # we can re-use our relational join to get the overlap:
             OnExtraDst '((Row) NIL) # do nothing
-            OnCollide  '((Row) (setq Result T)) )
+            OnCollide '((Src Dst)
+                        (when (<> (xyv-get-v Dst) '-)
+                           (setq Result T) ) ) )
 
          (setq Result NIL)
          (xyvs-join ToTest Blocks OnExtraDst OnCollide)
          Result ) ) )
 
-(de nudge-v () # returns T if moved, NIL if blocked
+
+(de nudge-> () # T if moved, NIL if blocked
+   (inc '*X)
+   (if (collision?) (prog (dec '*X) NIL)  T ) )
+
+(de nudge-< () # T if moved, NIL if blocked
+   (dec '*X)
+   (if (collision?) (prog (inc '*X) NIL)  T ) )
+
+(de nudge-v () # T if moved, NIL if blocked
    (inc '*Y)
-   (if (collision?)
-      (prog (dec '*Y) NIL)
-      T ) )
+   (if (collision?) (prog (dec '*Y) NIL)  T ) )
+
 
 (de stamp-shape ()
    (setq *M (xyvs->pic
