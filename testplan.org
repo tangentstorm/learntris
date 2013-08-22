@@ -759,6 +759,7 @@ Use upper case letters.
 . . . . . . . . . . # 21
 #+end_src
 
+
 *** TODO [4/5] collision detection
 **** DONE left wall
 
@@ -1000,8 +1001,35 @@ y y g g b b m m m . # 21
 y y r g g b . m . . # 20
 y y g g b b m m m . # 21
 #+end_src
+*** TODO [0/1] hard drop (V)
+**** TODO stamp when colliding with floor
+#+name: drop.floor
+#+begin_src
+> TVpq
+. . . . . . . . . . #  0
+. . . . . . . . . . #  1
+. . . . . . . . . . #  2
+. . . . . . . . . . #  3
+. . . . . . . . . . #  4
+. . . . . . . . . . #  5
+. . . . . . . . . . #  6
+. . . . . . . . . . #  7
+. . . . . . . . . . #  8
+. . . . . . . . . . #  9
+. . . . . . . . . . # 10
+. . . . . . . . . . # 11
+. . . . . . . . . . # 12
+. . . . . . . . . . # 13
+. . . . . . . . . . # 14
+. . . . . . . . . . # 15
+. . . . . . . . . . # 16
+. . . . . . . . . . # 17
+. . . . . . . . . . # 18
+. . . . . . . . . . # 19
+. . . . m . . . . . # 20
+. . . m m m . . . . # 21
+#+end_src
 
 *** TODO gravity during step
-*** TODO hard drops
 
 ** TODO clearing lines
