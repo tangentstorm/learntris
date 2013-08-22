@@ -265,12 +265,12 @@
          G)
       (list X0 Y0 X1 Y1) ) )
 
-(de xyvs-clip (bounds xyvs)
-   (let (X0 (pop 'bounds)
-         Y0 (pop 'bounds)
-         X1 (pop 'bounds)
-         Y1 (pop 'bounds))
-      (find-rows xyvs
+(de xyvs-clip (Bounds XYVs)
+   (let (X0 (pop 'Bounds)
+         Y0 (pop 'Bounds)
+         X1 (pop 'Bounds)
+         Y1 (pop 'Bounds))
+      (find-rows XYVs
          '((X Y V) (and
                       (>= X X0) (<= X X1)
                       (>= Y Y0) (<= Y Y1) ) ) ) ) )
