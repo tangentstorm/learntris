@@ -19,7 +19,8 @@ defmodule Elixtris do
   def respace(''), do: ''
   def respace([h|t]), do: [h|[32|respace t]]
 
-  # transpose a 2d list
+  # clockwise rotation is the reverse of the transpose a 2d list
+  # (the reverse here happens implictly in the accumulator)
   def clockwise(grid) do
     init = for _ <- List.first(grid) do [] end
     Enum.reduce grid, init, fn (row, cols) ->
