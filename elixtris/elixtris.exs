@@ -4,6 +4,11 @@ defmodule Elixtris do
   # type Cmd = state -> state
   # 's0' refers to the game state at start of the function
 
+  def empty_row, do: '. . . . . . . . . .'
+  def initial_state do
+    { for _ <- 0..21 do empty_row end, 0, 0 }
+  end
+
   # print :: Cmd
   # print the state of the matrix
 
@@ -11,12 +16,6 @@ defmodule Elixtris do
     { matrix, score, numLines } = s0
     for line <- matrix, do: IO.puts line
     s0
-  end
-
-
-  def empty_row, do: '. . . . . . . . . .'
-  def initial_state do
-    { for _ <- 0..21 do empty_row end, 0, 0 }
   end
 
   # given :: Cmd
@@ -28,7 +27,7 @@ defmodule Elixtris do
 
   # query :: state, [char] -> [char]
   def query(s0, [ch|buf]) do
-    { m, n, s } = s0
+    { m, s, n } = s0
     case [ch] do
       'n' -> IO.puts n
       's' -> IO.puts s
@@ -38,16 +37,16 @@ defmodule Elixtris do
   end
 
   # step :: Cmd
-  def step(s0) do
-    { m0, s, n } = s0
-    m1 = for row <- m0 do
-      # clear empty rows and update the score and number of cleared rows
+	# Clears out full rows and updates the score and line count registers.
+  def step(state0) do
+    { m0, s0, n0 } = state0
+    { m1, s1, n1 } = Enum.reduce m0, {[], s0, n0}, fn(row, {rows, s, n}) ->
       if List.to_string(row) |> String.contains?(".")
-        do n = n + 1; s = s + 1; row
-        else empty_row
+        do {[row|rows], s, n}
+        else {[empty_row|rows], s+100, n+1}
       end
     end
-    { m1, s, n }
+    { Enum.reverse(m1), s1, n1 }
   end
 
   # io :: state, input-buffer -> ()
