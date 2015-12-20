@@ -8,6 +8,7 @@ defmodule Elixtris do
     %{ matrix: for _ <- 0..21 do empty_row end,
        score: 0,
        numLines: 0,
+       tx: 0, ty: 0,
        tetramino: ['....', 'cccc', '....', '....'] }
   end
 
@@ -19,7 +20,30 @@ defmodule Elixtris do
   def respace(''), do: ''
   def respace([h|t]), do: [h|[32|respace t]]
 
-  # clockwise rotation is the reverse of the transpose a 2d list
+  # blend: str,str,int->str  -- overwrite bg str with fg at position.
+  def blend(fg, bg) do
+    Enum.join(for {f,b} <-Enum.zip(fg,bg) do [if [f]=='.' do b else f end] end)
+  end
+
+  # stamp/3 :: chr, chr, int -> chr
+  def stamp(fg, bg, x) do
+    len = Enum.count fg
+    Enum.join([Enum.take(bg,x),
+               blend(fg, Enum.slice(bg, x..(x+len))),
+               Enum.drop(bg, x+len)])
+    |> String.to_char_list
+  end
+
+  # stamp/4 :: (grid, grid, int,int)->grid -- stamp fg onto bg at (x,y) (2d version)
+  def stamp(fg, bg, x, y) do
+    Enum.concat [Enum.take(bg, y),
+                for {f, b} <- Enum.zip(fg, Enum.drop(bg, y)) do
+                  (stamp f, b, x)
+                end,
+                Enum.drop(bg, y+Enum.count fg)]
+  end
+
+  # clockwise rotation is the reverse of the transpose for a 2d list
   # (the reverse here happens implictly in the accumulator)
   def clockwise(grid) do
     init = for _ <- List.first(grid) do [] end
@@ -28,14 +52,13 @@ defmodule Elixtris do
     end
   end
 
-  # print grid -> ()
+  # print :: grid -> ()
   def print(grid) do
     for row <- grid, do: row |> respace |> IO.puts
   end
 
   # given :: Cmd
   # reads the matrix from stdin
-
   def given(s0) do
     %{ s0 | matrix:
               for _ <- 0..21 do
@@ -54,6 +77,10 @@ defmodule Elixtris do
       _ -> raise "invalid character after '?': " ++ ch
     end
     buf
+  end
+
+  def upcase(grid) do
+    for row <- grid do row |> List.to_string |> String.upcase |> String.to_char_list end
   end
 
   # step :: Cmd
@@ -84,14 +111,16 @@ defmodule Elixtris do
            's' -> step s0
            '?' -> buf = query s0, buf; s0
            't' -> print s0.tetramino; s0
-           'O' -> %{s0 | tetramino: ['yy', 'yy']}
-           'Z' -> %{s0 | tetramino: ['rr.', '.rr', '...']}
-           'S' -> %{s0 | tetramino: ['.gg', 'gg.', '...']}
-           'J' -> %{s0 | tetramino: ['b..', 'bbb', '...']}
-           'L' -> %{s0 | tetramino: ['..o', 'ooo', '...']}
-           'T' -> %{s0 | tetramino: ['.m.', 'mmm', '...']}
+           'O' -> %{s0 | tetramino: ['yy', 'yy'], tx: 4,  ty: 0 }
+           'Z' -> %{s0 | tetramino: ['rr.', '.rr', '...'], tx: 3, ty: 0 }
+           'S' -> %{s0 | tetramino: ['.gg', 'gg.', '...'], tx: 3, ty: 0 }
+           'J' -> %{s0 | tetramino: ['b..', 'bbb', '...'], tx: 3, ty: 0 }
+           'L' -> %{s0 | tetramino: ['..o', 'ooo', '...'], tx: 3, ty: 0 }
+           'T' -> %{s0 | tetramino: ['.m.', 'mmm', '...'], tx: 3, ty: 0 }
+           'I' -> %{s0 | tetramino: ['....', 'cccc', '....', '....'], tx: 3, ty: 0 }
            ')' -> %{s0 | tetramino: clockwise s0.tetramino }
            ';' -> IO.puts ''; s0
+           'P' -> print (stamp (upcase s0.tetramino), s0.matrix, s0.tx, s0.ty); s0
            _   -> s0 # no change
          end
     unless [ch]=='q', do: io s1, buf
