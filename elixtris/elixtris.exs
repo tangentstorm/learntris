@@ -19,6 +19,14 @@ defmodule Elixtris do
   def respace(''), do: ''
   def respace([h|t]), do: [h|[32|respace t]]
 
+  # transpose a 2d list
+  def clockwise(grid) do
+    init = for _ <- List.first(grid) do [] end
+    Enum.reduce grid, init, fn (row, cols) ->
+      for {col, val} <- Enum.zip(cols, row), do: [val|col]
+    end
+  end
+
   # print grid -> ()
   def print(grid) do
     for row <- grid, do: row |> respace |> IO.puts
@@ -32,6 +40,7 @@ defmodule Elixtris do
               for _ <- 0..21 do
                 IO.gets("")
                 |> String.replace(" ", "")
+                |> String.rstrip
                 |> String.to_char_list
               end }
   end
@@ -80,6 +89,8 @@ defmodule Elixtris do
            'J' -> %{s0 | tetramino: ['b..', 'bbb', '...']}
            'L' -> %{s0 | tetramino: ['..o', 'ooo', '...']}
            'T' -> %{s0 | tetramino: ['.m.', 'mmm', '...']}
+           ')' -> %{s0 | tetramino: clockwise s0.tetramino }
+           ';' -> IO.puts ''; s0
            _   -> s0 # no change
          end
     unless [ch]=='q', do: io s1, buf
