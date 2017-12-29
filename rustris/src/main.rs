@@ -31,6 +31,16 @@ impl Game {
       for c in readln().chars() {
         if c==' ' || c=='\n' {}
         else { self.matrix[y][x]=c; x+=1 }}}}
+
+  fn step(&mut self) {
+    let mut cleared = 0;
+    self.matrix = self.matrix.iter().map(|row| {
+      let num_blanks = row.iter().fold(0, |a,c| if *c=='.' {a+1} else {a});
+      if num_blanks == 0 { cleared+=1; vec!['.'; 10 as usize] }
+      else { row.clone() }
+    }).collect();
+    self.count += cleared; self.score += cleared*100;
+  }
 }
 
 fn main() {
@@ -43,6 +53,7 @@ fn main() {
         'p' => g.print_matrix(),
         'g' => g.get_matrix(),
         'c' => g.clear(),
+        's' => g.step(),
         '?' => match chars.next() {
                  Some('s') => println!("{}", g.score),
                  Some('n') => println!("{}", g.count),
