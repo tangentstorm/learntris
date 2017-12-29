@@ -7,7 +7,7 @@ fn readln() -> String {
   s }
 
 struct Game {
-  matrix : Vec<Vec<char>>
+  score: u32, count: u32, matrix : Vec<Vec<char>>
 }
 
 fn vec2d<T:Copy>(h:usize, w:usize, fill:T) -> Vec<Vec<T>> {
@@ -15,7 +15,7 @@ fn vec2d<T:Copy>(h:usize, w:usize, fill:T) -> Vec<Vec<T>> {
 
 impl Game {
   fn new() -> Game {
-    Game { matrix: vec2d(22,10,'.') }}
+    Game { score:0, count:0, matrix: vec2d(22,10,'.') }}
 
   fn clear(&mut self) {
     self.matrix = vec2d(22,10,'.') }
@@ -36,11 +36,15 @@ impl Game {
 fn main() {
   let mut g = Game::new();
   loop {
-    let s = readln();
-    for c in s.chars() {
+    let s = readln(); let mut chars = s.chars();
+    while let Some(c) = chars.next() {
       match c {
         'q' => return,
         'p' => g.print_matrix(),
         'g' => g.get_matrix(),
         'c' => g.clear(),
+        '?' => match chars.next() {
+                 Some('s') => println!("{}", g.score),
+                 Some('n') => println!("{}", g.count),
+                 _ => panic!("expected ('s'|'n') after '?'") }
         _ => {} }}}}
