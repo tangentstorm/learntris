@@ -13,6 +13,7 @@ fn readln() -> String {
 struct Sprite { h: usize, w:usize, data:Vec<char> }
 
 impl Sprite {
+
   fn new(h:usize, w:usize, s:&str) -> Self {
     assert_eq!(s.len(), h*w, "s.len() should match h*w");
     Self{ h:h, w:w, data:s.chars().collect() }}
@@ -28,6 +29,9 @@ impl Sprite {
   fn set(&mut self, y:usize, x:usize, v:char) {
     self.data[y*self.w + x] = v; }
 
+  fn get(&self, y:usize, x:usize) -> char {
+    self.data[y*self.w + x] }
+
   // rotate clockwise
   fn cw(&self) -> Self {
     let mut v = vec!();
@@ -36,15 +40,25 @@ impl Sprite {
 
   fn hw(&self) -> (usize, usize) { (self.h, self.w) }
 
+  fn to_uppercase(&self) -> Self {
+    let mut up = vec!();
+    for c in &self.data { up.extend(c.to_uppercase()) }
+    Sprite{ h:self.h, w:self.w, data:up }}
+
+  fn onto(&self, other:&Self, y:usize, x:usize) -> Self {
+    let mut res = Sprite{ h:other.h, w:other.w, data:other.data.clone() };
+    for yy in 0..self.h { for xx in 0..self.w { res.set(yy+y, xx+x, self.get(yy, xx) ) }}
+    res }
+
 }
 
 // -- Game object ---------------------------------------------
 
-struct Game { score: u32, count: u32, matrix:Sprite, active:Sprite }
+struct Game { score: u32, count: u32, matrix:Sprite, active:Sprite, x:usize, y:usize }
 
 impl Game {
   fn new() -> Game {
-    Game { score:0, count:0, matrix:Sprite::new_fill(22,10,'.'), active:Sprite::new(1,1,"x"), }}
+    Game { score:0, count:0, matrix:Sprite::new_fill(22,10,'.'), active:Sprite::new(1,1,"x"), y:0, x:4}}
 
   fn clear(&mut self) {
     self.matrix = Sprite::new_fill(22,10,'.') }
@@ -93,6 +107,7 @@ fn main() {
         'T' => g.active = Sprite::new(3,3,".m.mmm..."),
         ')' => g.active = g.active.cw(),
         't' => g.active.print(),
+        'P' => g.active.to_uppercase().onto(&g.matrix, g.y, g.x).print(),
         ';' => println!(""),
         '?' => match chars.next() {
                  Some('s') => println!("{}", g.score),
