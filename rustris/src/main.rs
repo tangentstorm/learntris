@@ -15,12 +15,12 @@ fn vec2d<T:Copy>(h:usize, w:usize, fill:T) -> Vec<Vec<T>> {
 // -- 2-dimenstonal arrays -------------------------------------
 
 struct Matrix<T> { h: usize, w:usize, data:Vec<T> }
-type Tetramino = Matrix<char>;
+type Sprite = Matrix<char>;
 
 impl Matrix<char> {
   fn new(h:usize, w:usize, s:&str) -> Self {
     assert_eq!(s.len(), h*w, "s.len() should match h*w");
-    Tetramino{ h:h, w:w, data:s.chars().collect() }}
+    Sprite{ h:h, w:w, data:s.chars().collect() }}
 
   fn print(&self) {
     for y in 0..self.h {
@@ -37,11 +37,11 @@ impl Matrix<char> {
 
 // -- Game object ---------------------------------------------
 
-struct Game { score: u32, count: u32, matrix : Vec<Vec<char>>, active:Tetramino }
+struct Game { score: u32, count: u32, matrix : Vec<Vec<char>>, active:Sprite }
 
 impl Game {
   fn new() -> Game {
-    Game { score:0, count:0, matrix: vec2d(22,10,'.'), active:Tetramino::new(1,1,"."), }}
+    Game { score:0, count:0, matrix: vec2d(22,10,'.'), active:Sprite::new(1,1,"."), }}
 
   fn clear(&mut self) {
     self.matrix = vec2d(22,10,'.') }
@@ -83,13 +83,13 @@ fn main() {
         'g' => g.get_matrix(),
         'c' => g.clear(),
         's' => g.step(),
-        'I' => g.active = Tetramino::new(4,4,"....cccc........"),
-        'O' => g.active = Tetramino::new(2,2,"yyyy"),
-        'Z' => g.active = Tetramino::new(3,3,"rr..rr..."),
-        'S' => g.active = Tetramino::new(3,3,".gggg...."),
-        'J' => g.active = Tetramino::new(3,3,"b..bbb..."),
-        'L' => g.active = Tetramino::new(3,3,"..oooo..."),
-        'T' => g.active = Tetramino::new(3,3,".m.mmm..."),
+        'I' => g.active = Sprite::new(4,4,"....cccc........"),
+        'O' => g.active = Sprite::new(2,2,"yyyy"),
+        'Z' => g.active = Sprite::new(3,3,"rr..rr..."),
+        'S' => g.active = Sprite::new(3,3,".gggg...."),
+        'J' => g.active = Sprite::new(3,3,"b..bbb..."),
+        'L' => g.active = Sprite::new(3,3,"..oooo..."),
+        'T' => g.active = Sprite::new(3,3,".m.mmm..."),
         ')' => g.active = g.active.cw(),
         't' => g.active.print(),
         ';' => println!(""),
