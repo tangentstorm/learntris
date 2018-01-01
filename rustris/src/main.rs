@@ -4,15 +4,13 @@ use std::io;
 
 fn readln() -> String {
   let mut s = String::new();
-  io::stdin().read_line(&mut s)
-    .expect("failed to read input line.");
+  io::stdin().read_line(&mut s).expect("failed to read input line.");
   s }
 
 
 // -- 2-dimenstonal arrays -------------------------------------
 
-struct Matrix<T> { h: usize, w:usize, data:Vec<T> }
-type Sprite = Matrix<char>;
+struct Sprite { h: usize, w:usize, data:Vec<char> }
 
 impl Sprite {
   fn new(h:usize, w:usize, s:&str) -> Self {
@@ -69,11 +67,10 @@ impl Game {
       if num_blanks == 0 { cleared.push(y); }}
     for y in cleared {
       for x in 0..w { self.matrix.set(y,x,'.') }
-      self.count += 1; self.score += 100;
-    }
-  }
+      self.count += 1; self.score += 100; }}
 
 }
+
 // -- command interpreter (main) ------------------------------
 
 fn main() {
