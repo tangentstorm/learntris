@@ -83,6 +83,9 @@ impl Game {
       for x in 0..w { self.matrix.set(y,x,'.') }
       self.count += 1; self.score += 100; }}
 
+  fn spawn(&mut self, x:usize, w:usize, s:&str) {
+    self.active = Sprite::new(w,w,s); self.x=x; self.y=0; }
+
 }
 
 // -- command interpreter (main) ------------------------------
@@ -98,14 +101,19 @@ fn main() {
         'g' => g.get_matrix(),
         'c' => g.clear(),
         's' => g.step(),
-        'I' => g.active = Sprite::new(4,4,"....cccc........"),
-        'O' => g.active = Sprite::new(2,2,"yyyy"),
-        'Z' => g.active = Sprite::new(3,3,"rr..rr..."),
-        'S' => g.active = Sprite::new(3,3,".gggg...."),
-        'J' => g.active = Sprite::new(3,3,"b..bbb..."),
-        'L' => g.active = Sprite::new(3,3,"..oooo..."),
-        'T' => g.active = Sprite::new(3,3,".m.mmm..."),
+        'I' => g.spawn(3,4,"....cccc........"),
+        'O' => g.spawn(4,2,"yyyy"),
+        'Z' => g.spawn(3,3,"rr..rr..."),
+        'S' => g.spawn(3,3,".gggg...."),
+        'J' => g.spawn(3,3,"b..bbb..."),
+        'L' => g.spawn(3,3,"..oooo..."),
+        'T' => g.spawn(3,3,".m.mmm..."),
         ')' => g.active = g.active.cw(),
+        '(' => g.active = g.active.cw().cw().cw(),
+        '<' => if g.x > 0 { g.x -= 1; },
+        '>' => if g.x + g.active.w < g.matrix.w { g.x += 1 },
+        'v' => g.y += 1,
+        '^' => g.y -= 1,
         't' => g.active.print(),
         'P' => g.active.to_uppercase().onto(&g.matrix, g.y, g.x).print(),
         ';' => println!(""),
