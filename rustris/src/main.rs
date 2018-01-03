@@ -45,9 +45,22 @@ impl Sprite {
     for c in &self.data { up.extend(c.to_uppercase()) }
     Sprite{ h:self.h, w:self.w, data:up }}
 
+  /// returns true if the cell is out of bounds or already filled
+  fn collide_yx(&self, y:i32, x:i32) -> bool {
+    if y < 0 || y >= (self.h as i32) { true }
+    else if x < 0 || x >= (self.w as i32) { true }
+    else { self.get(y as usize, x as usize) != '.' }}
+
+  fn collide(&self, other:&Self, y:i32, x:i32) -> bool {
+    for yy in 0..self.h { for xx in 0..self.w {
+      if (self.get(yy, xx) != '.') && other.collide_yx(y+(yy as i32), x+(xx as i32)) { return true } }}
+    false }
+
   fn onto(&self, other:&Self, y:usize, x:usize) -> Self {
     let mut res = Sprite{ h:other.h, w:other.w, data:other.data.clone() };
-    for yy in 0..self.h { for xx in 0..self.w { res.set(yy+y, xx+x, self.get(yy, xx) ) }}
+    for yy in 0..self.h { for xx in 0..self.w {
+      let c = self.get(yy, xx);
+      if c != '.' { res.set(yy+y, xx+x, c) }}}
     res }
 
 }
@@ -86,6 +99,11 @@ impl Game {
   fn spawn(&mut self, x:usize, w:usize, s:&str) {
     self.active = Sprite::new(w,w,s); self.x=x; self.y=0; }
 
+  fn nudge(&mut self, dy:i32, dx:i32) {
+    if !self.active.collide(&self.matrix, dy+(self.y as i32), dx+(self.x as i32)) {
+      self.x = (self.x as i32 + dx) as usize;
+      self.y = (self.y as i32 + dy) as usize; }}
+
 }
 
 // -- command interpreter (main) ------------------------------
@@ -110,10 +128,10 @@ fn main() {
         'T' => g.spawn(3,3,".m.mmm..."),
         ')' => g.active = g.active.cw(),
         '(' => g.active = g.active.cw().cw().cw(),
-        '<' => if g.x > 0 { g.x -= 1; },
-        '>' => if g.x + g.active.w < g.matrix.w { g.x += 1 },
-        'v' => g.y += 1,
-        '^' => g.y -= 1,
+        '<' => g.nudge(0,-1),
+        '>' => g.nudge(0,1),
+        'v' => g.nudge(1,0),
+        '^' => g.nudge(-1,0),
         't' => g.active.print(),
         'P' => g.active.to_uppercase().onto(&g.matrix, g.y, g.x).print(),
         ';' => println!(""),
