@@ -39,6 +39,8 @@ INPUT_PATH = os.environ.get("INPUT_PATH", "")
 # off the header, but doing so turns off all prints!)
 SKIP_LINES = int(os.environ.get("SKIP_LINES", "0"))
 
+TEST_PLAN = os.environ.get("TEST_PLAN", "testplan.org")
+
 if sys.version_info.major < 3:
     println("Sorry, testris requires Python 3.x.")
     sys.exit(1)
@@ -146,7 +148,7 @@ def run_test(program, opcodes):
 def run_tests(program_args, use_shell):
     num_passed = 0
     try:
-        for i, test in enumerate(extract.tests()):
+        for i, test in enumerate(extract.tests(TEST_PLAN)):
             opcodes = parse_test(test.lines)
             program = spawn(program_args, use_shell)
             run_test(program, opcodes)
