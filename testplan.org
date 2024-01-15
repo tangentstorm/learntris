@@ -1,4 +1,6 @@
 #+title: learntris test suite
+#+server: https://rogo.tangentcode.com/
+#+name: learntris
 
 # This file is created with org-mode, an awesome outliner and
 # personal information manager for emacs. In org-mode, this file
@@ -335,8 +337,6 @@ c c c c
 #+end_src
 
 *** DONE The O (yellow)
-
-The O spawns in a 4 \times 3 matrix:
 
 #+name: shape.O
 #+begin_src
@@ -1074,7 +1074,7 @@ M M M . . . . . . . #  1
 : there can be no compromise.
 #+end_src
 
-**** DONE floor
+**** DONE [#B] floor
 
 #+name: collide.floor
 #+begin_src
