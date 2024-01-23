@@ -1,6 +1,6 @@
 #+title: learntris test suite
-#+server: https://rogo.tangentcode.com/
-#+name: learntris
+#+server: https://tanco.tangentcode.com/
+#+name: learntris-classic
 
 # This file is created with org-mode, an awesome outliner and
 # personal information manager for emacs. In org-mode, this file
@@ -203,7 +203,7 @@ m m m r r b b y y . # 21
 ** DONE [2/2] establish protocol to set and query the score
 *** DONE score register:
 
-#+name: io.score.?s
+#+name: io.score.s
 #+begin_src
 > ?s
 0
@@ -217,7 +217,7 @@ m m m r r b b y y . # 21
 
 *** DONE number of lines register:
 
-#+name: io.score.?n
+#+name: io.score.n
 #+begin_src
 > ?n
 0
