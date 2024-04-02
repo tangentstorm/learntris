@@ -1206,7 +1206,7 @@ M M M . . . . . . . #  1
 . . . m m m . . . . # 21
 = Block Collisions
 : Here we have our first test of collision detection
-: between a falling piece and a block already in the well.
+: between a falling piece and a block already in the matrix.
 :
 : When the second hard drop is issued, the Z tetramino
 : should collide with the remains of the T and come to
@@ -1272,7 +1272,7 @@ M M M . . . . . . . #  1
 . . b . . . . . . . # 20
 . . b . . . . . . . # 21
 = Sideways Block Collisions 1
-: Here we've hard-drapped a J off to the left side a bit, then
+: Here we've hard-dropped a J off to the left side a bit, then
 : spawned a Z and manually moved it down next to the fallen blocks.
 : The '<' commands should have no effect.
 #+end_src
